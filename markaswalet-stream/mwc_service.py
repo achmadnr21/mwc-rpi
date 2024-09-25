@@ -3,7 +3,7 @@ from devicelib.stream import stream_process
 import os
 import time
 
-path_now = os.getcwd()
+path_now = os.path.expanduser('~/')
 
 # create device object
 device_dataControl = Device()

@@ -7,20 +7,9 @@ import os
 class Device:
     def __init__(self, API_URL='https://markaswalet-iot.techiro.co.id/api/camera/'):
         self.API_URL = API_URL
-        self.database_dir = 'localdb'
+        self.database_dir = os.path.expanduser('~/localdb')
         self.database_name = 'device.db'
         self.create_table_if_not_exist()
-
-    def generate_password(self, length=64):
-        characters = string.ascii_letters + string.digits + '#@%-!+'
-        password = ''.join(random.choice(characters) for _ in range(length))
-        return password
-
-    def generate_streamKey(self, length=64):
-        characters = string.ascii_letters + string.digits
-        password = ''.join(random.choice(characters) for _ in range(length))
-        return password
-
     def local_database_connection(self):
         db_dir = self.database_dir
         if not os.path.exists(db_dir):
@@ -29,6 +18,7 @@ class Device:
 
         conn = sq.connect(f'{db_dir}/{self.database_name}')
         return conn
+        
     def create_table_if_not_exist(self):
         # buat folder localdb jika belum ada
         conn = self.local_database_connection()
@@ -44,6 +34,20 @@ class Device:
         ''')
         conn.commit()
         conn.close()
+
+    def generate_password(self, length=64):
+        characters = string.ascii_letters + string.digits + '#@%-!+'
+        password = ''.join(random.choice(characters) for _ in range(length))
+        return password
+
+    def generate_streamKey(self, length=64):
+        characters = string.ascii_letters + string.digits
+        password = ''.join(random.choice(characters) for _ in range(length))
+        return password
+
+    
+        
+    
     def is_check_local_data_exist(self):
         conn = self.local_database_connection()
         cursor = conn.cursor()

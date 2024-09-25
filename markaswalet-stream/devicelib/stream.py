@@ -30,7 +30,7 @@ def write_image(frame=None):
         # Memperbarui TIMER setelah menyimpan gambar
         TIMER = current_time
 # get faces
-detector = cv2.CascadeClassifier('/home/markaswalet/markaswalet-stream/haarcascadeku/haarcascade_frontalface_default.xml')
+detector = cv2.CascadeClassifier('haarcascadeku/haarcascade_frontalface_default.xml')
 def get_faces(image = None):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     faces = detector.detectMultiScale(gray)
