@@ -7,6 +7,22 @@ import time
 import subprocess
 import os
 import devicelib.detector as detector
+# import raspberry pi pins to pull up digital pin for relay
+import RPi.GPIO as GPIO
+# Set the GPIO mode
+GPIO.setmode(GPIO.BCM)
+# Set the GPIO pin for relay
+GPIO.setup(16, GPIO.OUT)
+
+# start time default is 17:00 and turn it off next day at 5:00
+def relay_on_time_between(pin_number=16):
+    start_time = 17
+    end_time = 5
+    current_time = datetime.now().hour
+    if current_time >= start_time or current_time <= end_time:
+        GPIO.output(pin_number, GPIO.LOW)
+    else:
+        GPIO.output(pin_number, GPIO.HIGH)
 
 TIMER = time.time()
 def write_image(frame=None):
@@ -93,6 +109,8 @@ def stream_process(stream_ip = '103.193.179.252' ,stream_key='mwcdef'):
     ffmpeg = subprocess.Popen(command, stdin=subprocess.PIPE)
     try:
         while True:
+            # Turn on relay
+            relay_on_time_between(pin_number=16)
             # Capture video frame
             frame = picam2.capture_array()
             if frame is None:
