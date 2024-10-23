@@ -6,6 +6,7 @@ from datetime import datetime
 import time
 import subprocess
 import os
+import devicelib.detector as detector
 
 TIMER = time.time()
 def write_image(frame=None):
@@ -46,33 +47,7 @@ picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888',
 
 
 def stream_process(stream_ip = '103.193.179.252' ,stream_key='mwcdef'):
-    # stream_key = 'mwcxx'
     # add         '-loglevel', 'error', to shut up the log
-
-    # Old Preset
-    # command = [
-    #     'ffmpeg',
-    #     '-loglevel', 'error',
-    #     '-y',  # overwrite output files
-    #     '-f', 'rawvideo',
-    #     '-pix_fmt', 'rgb24',  # Changed to rgb24 to match XRGB8888 format
-    #     '-s', f'{IMSIZE[0]}x{IMSIZE[1]}',  # size of the input video
-    #     '-r', str(FPS),  # frames per second
-    #     '-i', '-',  # input comes from a pipe
-    #     '-c:v', 'libx264',  # video codec
-    #     '-crf', '21',
-    #     '-preset', 'veryfast',
-    #     '-b:v', '750k',  # Adjust bitrate as needed for better quality
-    #     '-maxrate', '750k',
-    #     '-bufsize', '1500k',
-    #     '-ac', '2',
-    #     '-c:a', 'aac',  # Codec audio
-    #     '-b:a', '128k',  # Bitrate audio
-    #     '-f', 'flv',  # format for RTMP
-    #     f'rtmp://{stream_ip}:1935/markaswalet-live/{stream_key}'  # RTMP server URL
-    # ]
-
-
     # New preset
     command = [
         'ffmpeg',
@@ -90,9 +65,10 @@ def stream_process(stream_ip = '103.193.179.252' ,stream_key='mwcdef'):
         # Video settings
         '-c:v', 'libx264',  # video codec
         '-preset', 'ultrafast',
-        '-b:v', '750k',  # Adjust bitrate as needed for better quality
-        '-maxrate', '750k',
-        '-bufsize', '1500k',
+        '-tune', 'zerolatency',
+        '-b:v', '500k',  # Adjust bitrate as needed for better quality
+        '-maxrate', '500k',
+        '-bufsize', '100k',
         '-pix_fmt', 'yuv420p', #standard pixel format for compatibility
         '-profile:v', 'baseline', #Baseline for better compatibility with mobile devices
 
@@ -128,15 +104,11 @@ def stream_process(stream_ip = '103.193.179.252' ,stream_key='mwcdef'):
             frame_bgr = np.asarray(frame[:, :, 0:3], dtype=np.uint8)
             frame_bgr = cv2.flip(frame_bgr, -1)
             write_image(frame_bgr)
-            faces = get_faces(frame_bgr)
+            new_frame_bgr, count = detector.detect_and_count_birds(frame, confidence=0.65)
             # Get the current time
             current_time = datetime.now().strftime("%H:%M:%S")
             # Write it
-            frame_rgb = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
-            
-            for (x,y,w,h) in faces:
-                cv2.rectangle(frame_rgb, (x,y), (x+w, y+h), (255,0,0),2) # red
-
+            frame_rgb = cv2.cvtColor(new_frame_bgr, cv2.COLOR_BGR2RGB)
             cv2.putText(frame_rgb, current_time, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA) # red
             try:
                 ffmpeg.stdin.write(frame_rgb.tobytes())
