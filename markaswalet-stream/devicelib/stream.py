@@ -8,21 +8,19 @@ import subprocess
 import os
 import devicelib.detector as detector
 # import raspberry pi pins to pull up digital pin for relay
-import RPi.GPIO as GPIO
-# Set the GPIO mode
-GPIO.setmode(GPIO.BCM)
-# Set the GPIO pin for relay
-GPIO.setup(16, GPIO.OUT)
+
+import gpiod
+
 
 # start time default is 17:00 and turn it off next day at 5:00
-def relay_on_time_between(pin_number=16):
+def relay_on_time_between(LED_LINE = None):
     start_time = 17
     end_time = 5
     current_time = datetime.now().hour
     if current_time >= start_time or current_time <= end_time:
-        GPIO.output(pin_number, GPIO.LOW)
+        LED_LINE.set_value(0)
     else:
-        GPIO.output(pin_number, GPIO.HIGH)
+        LED_LINE.set_value(1)
 
 TIMER = time.time()
 def write_image(frame=None):
@@ -107,10 +105,17 @@ def stream_process(stream_ip = '103.193.179.252' ,stream_key='mwcdef'):
     print(f'====================== START SENDING =============================')
     # Start ffmpeg subprocess
     ffmpeg = subprocess.Popen(command, stdin=subprocess.PIPE)
+    IRLED= 16
+    chip = gpiod.Chip('gpiochip4')
+    led_line = chip.get_line(IRLED)
+    led_line.request(consumer="LED",
+    type=gpiod.LINE_REQ_DIR_OUT,
+    flags=gpiod.LINE_REQ_FLAG_BIAS_PULL_UP)
     try:
+        
         while True:
             # Turn on relay
-            relay_on_time_between(pin_number=16)
+            relay_on_time_between(LED_LINE=led_line)
             # Capture video frame
             frame = picam2.capture_array()
             if frame is None:
@@ -144,5 +149,8 @@ def stream_process(stream_ip = '103.193.179.252' ,stream_key='mwcdef'):
         ffmpeg.stdin.close()
         ffmpeg.wait()
         picam2.stop()
+        led_line.release()
     print(f'====================== RE-STARTING PROCESS =============================\n\n\n')
     time.sleep(5)
+    
+    
