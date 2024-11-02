@@ -2,7 +2,6 @@ import cv2
 import os
 from ultralytics import YOLO
 
-# YOLO_model = YOLO("model/yolov8n.pt", "v8")
 YOLO_model = YOLO("model/yolov8n.onnx")
 
 def detect_and_count_birds(img=None, confidence=0.8):

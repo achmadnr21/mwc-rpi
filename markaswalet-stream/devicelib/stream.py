@@ -11,7 +11,7 @@ import devicelib.detector as detector
 
 import gpiod
 
-
+IRLED= 16
 # start time default is 17:00 and turn it off next day at 5:00
 def relay_on_time_between(LED_LINE = None):
     start_time = 17
@@ -45,8 +45,11 @@ def write_image(frame=None):
         # Memperbarui TIMER setelah menyimpan gambar
         TIMER = current_time
 # get faces
-detector = cv2.CascadeClassifier('haarcascadeku/haarcascade_frontalface_default.xml')
+detector = None
 def get_faces(image = None):
+    global detector
+    if detector is None:
+        detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     faces = detector.detectMultiScale(gray)
     return faces, len(faces)
@@ -109,7 +112,7 @@ def stream_process(stream_ip = '103.193.179.252' ,stream_key='mwcdef'):
     picam2.start()
     print(f'====================== START SENDING =============================')
     # setups ir led for night and day
-    IRLED= 16
+    
     chip = gpiod.Chip('gpiochip4')
     led_line = chip.get_line(IRLED)
     led_line.request(consumer="LED",
