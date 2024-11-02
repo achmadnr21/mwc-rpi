@@ -49,7 +49,7 @@ detector = cv2.CascadeClassifier('haarcascadeku/haarcascade_frontalface_default.
 def get_faces(image = None):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     faces = detector.detectMultiScale(gray)
-    return faces
+    return faces, len(faces)
 # Stream procedure
 
 IMSIZE = (640, 480)
@@ -61,6 +61,11 @@ picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888',
 
 
 def stream_process(stream_ip = '103.193.179.252' ,stream_key='mwcdef'):
+    # jika stream_key == 'mwcdef' maka akan melakukan EXIT dari program
+    if stream_key == 'mwcdef' or stream_key is None:
+        print('Exiting from the program')
+        exit(0)
+    
     # add         '-loglevel', 'error', to shut up the log
     # New preset
     command = [
