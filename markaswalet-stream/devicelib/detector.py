@@ -2,16 +2,16 @@ import cv2
 import os
 from ultralytics import YOLO
 
-YOLO_model = YOLO("model/yolov8n.pt", "v8")
+# YOLO_model = YOLO("model/yolov8n.pt", "v8")
+YOLO_model = YOLO("model/yolov8n.onnx")
 
 def detect_and_count_birds(img=None, confidence=0.8):
+
     # Detect objects in the image
     results = YOLO_model.predict(source=[img], conf=confidence, save=False)
 
     # Get the number of objects detected
     DP = results[0]  # 'results' contains a list of detections
-
-    
 
     # Get the class names for 'bird'
     birds = [box for box in DP.boxes if 'bird' in YOLO_model.names[int(box.cls[0])].lower()]

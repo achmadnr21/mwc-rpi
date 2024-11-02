@@ -13,9 +13,9 @@ try:
 	iter = 0
 	while iter < 10:
 		print(f'iter-{iter}')
-		led_line.set_value(0) # nyalakan led
+		led_line.set_value(0)
 		time.sleep(2)
-		led_line.set_value(1) # matikan led
+		led_line.set_value(1)
 		time.sleep(2)
 		iter +=1
 finally:

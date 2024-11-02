@@ -103,14 +103,16 @@ def stream_process(stream_ip = '103.193.179.252' ,stream_key='mwcdef'):
     print(f'====================== START CAMERA  =============================')
     picam2.start()
     print(f'====================== START SENDING =============================')
-    # Start ffmpeg subprocess
-    ffmpeg = subprocess.Popen(command, stdin=subprocess.PIPE)
+    # setups ir led for night and day
     IRLED= 16
     chip = gpiod.Chip('gpiochip4')
     led_line = chip.get_line(IRLED)
     led_line.request(consumer="LED",
     type=gpiod.LINE_REQ_DIR_OUT,
     flags=gpiod.LINE_REQ_FLAG_BIAS_PULL_UP)
+    # Start ffmpeg subprocess
+    ffmpeg = subprocess.Popen(command, stdin=subprocess.PIPE)
+    
     try:
         
         while True:
