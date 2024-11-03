@@ -6,7 +6,8 @@ from datetime import datetime
 import time
 import subprocess
 import os
-import devicelib.detector as detector
+# import devicelib.detector as detector
+
 # import raspberry pi pins to pull up digital pin for relay
 
 import gpiod
@@ -56,7 +57,6 @@ def get_faces(image = None):
     # bounding box
     for (x, y, w, h) in faces:
         cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
-
     return faces, len(faces)
 # Stream procedure
 
