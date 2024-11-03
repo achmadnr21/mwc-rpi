@@ -52,6 +52,11 @@ def get_faces(image = None):
         detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     faces = detector.detectMultiScale(gray)
+
+    # bounding box
+    for (x, y, w, h) in faces:
+        cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
+
     return faces, len(faces)
 # Stream procedure
 
@@ -137,7 +142,12 @@ def stream_process(stream_ip = '103.193.179.252' ,stream_key='mwcdef'):
             frame_bgr = np.asarray(frame[:, :, 0:3], dtype=np.uint8)
             frame_bgr = cv2.flip(frame_bgr, -1)
             write_image(frame_bgr)
-            new_frame_bgr, count = detector.detect_and_count_birds(frame, confidence=0.65)
+            
+            # yolo
+            # new_frame_bgr, count = detector.detect_and_count_birds(frame, confidence=0.65)
+
+            # haarcascade
+            new_frame_bgr, count = get_faces(frame_bgr)
             # Get the current time
             current_time = datetime.now().strftime("%H:%M:%S")
             # Write it

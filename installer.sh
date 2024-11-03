@@ -14,5 +14,5 @@ sudo systemctl enable markaswalet-stream.service
 sudo systemctl daemon-reload
 echo "Starting service"
 sleep 2
-sudo systemctl start markaswalet-stream.service
-echo "Markaswalet - Techiro :: Installed"
+# sudo systemctl start markaswalet-stream.service
+echo "Markaswalet - Techiro :: Installed :: Jangan Lupa untuk di start service nya"
